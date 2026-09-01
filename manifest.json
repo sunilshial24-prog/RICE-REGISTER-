@@ -1,0 +1,21 @@
+{
+  "name": "Rice Register",
+  "short_name": "Rice Register",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#0f172a",
+  "description": "Offline-first CMAY and NFSA rice stock register",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
