@@ -252,7 +252,7 @@ async function apiGet(action, params={} ){
   const data=await r.json(); if(!data.ok) throw new Error(data.error||`Server error (HTTP ${r.status})`); return data;
 }
 async function apiHealth(){
-  const data=await apiGet('health');
+  const data=await apiGet('ping');
   return data;
 }
 async function apiPost(payload){
@@ -340,7 +340,7 @@ function renderHome(){
     const h=await apiHealth();
     toast(`Server OK · ${h.version||''}`);
     await fullSync();
-    toast('Google Sheet sync complete');
+    toast(`Google Sheet sync complete · ${result.count||0} saved`);
     render();
   }catch(e){
     console.error('SYNC ERROR',e);
