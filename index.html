@@ -16,6 +16,24 @@
   --ok:#15803d; --danger:#b91c1c; --shadow:0 8px 30px rgba(15,23,42,.07);
   --radius:20px;
 }
+html[data-theme="dark"]{--bg:#0b0f14;--surface:#111827;--text:#f8fafc;--muted:#94a3b8;--line:#263241;--accent:#f8fafc;--accent-2:#e2e8f0;--ok:#4ade80;--danger:#f87171;--shadow:0 8px 30px rgba(0,0,0,.28)}
+html[data-theme="dark"] .topbar{background:rgba(11,15,20,.92);border-bottom-color:#263241}
+html[data-theme="dark"] .hero{background:linear-gradient(135deg,#020617,#111827)}
+html[data-theme="dark"] .toggle{background:#1e293b}
+html[data-theme="dark"] .toggle button{color:#cbd5e1}
+html[data-theme="dark"] .toggle button.active{background:#f8fafc;color:#0f172a}
+html[data-theme="dark"] input,html[data-theme="dark"] select,html[data-theme="dark"] textarea,html[data-theme="dark"] .quick,html[data-theme="dark"] .secondary,html[data-theme="dark"] .icon-btn,html[data-theme="dark"] .segment button{background:#0f172a;color:#f8fafc;border-color:#334155}
+html[data-theme="dark"] .calc,html[data-theme="dark"] .ev{background:#0b1220;border-color:#263241}
+html[data-theme="dark"] .nav{background:rgba(17,24,39,.96);border-color:#263241}
+html[data-theme="dark"] .nav button{color:#94a3b8}
+html[data-theme="dark"] .nav button.active{background:#f8fafc;color:#0f172a}
+html[data-theme="dark"] .badge{background:#1e293b;color:#e2e8f0}
+html[data-theme="dark"] .notice{background:#172033;color:#dbeafe;border-color:#334155}
+html[data-theme="bw"]{--bg:#f4f4f4;--surface:#fff;--text:#111;--muted:#555;--line:#cfcfcf;--accent:#111;--accent-2:#000;--ok:#111;--danger:#111;--shadow:0 8px 24px rgba(0,0,0,.08)}
+html[data-theme="bw"] .hero{background:#111;color:#fff}
+html[data-theme="bw"] .badge,html[data-theme="bw"] .notice{background:#eee;color:#111;border-color:#bbb}
+html[data-theme="bw"] .primary{background:#111;color:#fff}
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 body{min-height:100vh}
@@ -87,6 +105,23 @@ input:focus,select:focus,textarea:focus{border-color:#93c5fd;box-shadow:0 0 0 3p
 .nav button{border:0;background:transparent;padding:8px 5px;border-radius:14px;color:#64748b;font-size:11px;font-weight:800}
 .nav button.active{background:#eff6ff;color:#1d4ed8}
 .nav .ic{font-size:19px;display:block;margin-bottom:2px}
+
+.settings-sheet{position:fixed;inset:0;background:rgba(15,23,42,.36);backdrop-filter:blur(5px);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.settings-panel{width:min(760px,100%);max-height:88vh;overflow:auto;background:var(--surface);border-radius:26px 26px 0 0;padding:18px 16px calc(24px + env(safe-area-inset-bottom));box-shadow:0 -16px 45px rgba(15,23,42,.18)}
+.settings-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.settings-head h2{margin:0;font-size:20px}
+.close-btn{width:40px;height:40px;border:1px solid var(--line);background:var(--surface);border-radius:13px}
+.setting-section{padding:14px 0;border-top:1px solid var(--line)}
+.setting-section:first-of-type{border-top:0}
+.setting-title{font-size:13px;font-weight:900;margin-bottom:10px}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.theme-btn{border:1px solid var(--line);background:var(--surface);padding:12px;border-radius:14px;text-align:left;font-weight:800}
+.theme-btn.active{outline:2px solid var(--accent);border-color:transparent}
+.theme-preview{height:40px;border-radius:10px;margin-bottom:8px;border:1px solid var(--line)}
+.theme-light{background:#f5f7fb}.theme-dark{background:#0f172a}.theme-bw{background:linear-gradient(90deg,#fff 0 50%,#111 50%)}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.theme-grid{grid-template-columns:1fr 1fr}.settings-grid{grid-template-columns:1fr}.settings-actions{grid-template-columns:1fr}}
 .toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 14px;border-radius:12px;font-size:12px;z-index:40;box-shadow:var(--shadow)}
 @media (max-width:520px){
  .grid3{gap:7px}.scheme-card{padding:11px}.big-num{font-size:20px}.scheme-card h3{font-size:13px}
@@ -141,8 +176,7 @@ const MONTHS=[
 const DB_NAME='rice-register-step3';
 const DB_VERSION=1;
 let state={page:'home',register:'CMAY',scheme:'AAY'};
-const GAS_KEY='rice-register-gas-url';
-const GAS_URL=()=>localStorage.getItem(GAS_KEY)||'';
+const GAS_URL=()=> 'https://script.google.com/macros/s/AKfycbzZPVQbbLiKQxVsO5_AQy4spUX1ZKqQj5P2P5p6QnOWshNrEZC8LVMPr9FMhI7bTtBw/exec';
 
 const $=s=>document.querySelector(s);
 const root=$('#root');
@@ -436,6 +470,49 @@ async function loadReports(){
   $('#reportBody').innerHTML=parts;
 }
 
+function getProfile(){
+  try{return JSON.parse(localStorage.getItem('rice-register-profile')||'{}');}catch{return {};}
+}
+function saveProfile(){
+  const profile={fpsName:$('#setFpsName').value.trim(),dealerName:$('#setDealerName').value.trim(),fpsCode:$('#setFpsCode').value.trim(),place:$('#setPlace').value.trim()};
+  localStorage.setItem('rice-register-profile',JSON.stringify(profile));
+  toast('Dealer details saved');
+  closeSettings();
+  render();
+}
+function applyTheme(theme, persist=true){
+  const t=['light','dark','bw'].includes(theme)?theme:'light';
+  document.documentElement.dataset.theme=t;
+  if(persist)localStorage.setItem('rice-register-theme',t);
+}
+function openSettings(){
+  const p=getProfile(), t=localStorage.getItem('rice-register-theme')||'light';
+  const wrap=document.createElement('div');wrap.className='settings-sheet';wrap.id='settingsSheet';
+  wrap.innerHTML=`<div class="settings-panel" role="dialog" aria-modal="true">
+    <div class="settings-head"><h2>Settings</h2><button class="close-btn" id="closeSettings">×</button></div>
+    <div class="setting-section"><div class="setting-title">Appearance</div><div class="theme-grid">
+      <button class="theme-btn ${t==='light'?'active':''}" data-theme-choice="light"><div class="theme-preview theme-light"></div>Light</button>
+      <button class="theme-btn ${t==='dark'?'active':''}" data-theme-choice="dark"><div class="theme-preview theme-dark"></div>Dark</button>
+      <button class="theme-btn ${t==='bw'?'active':''}" data-theme-choice="bw"><div class="theme-preview theme-bw"></div>Black & White</button>
+    </div></div>
+    <div class="setting-section"><div class="setting-title">Dealer / FPS Details</div><div class="settings-grid">
+      <div><label>FPS Name</label><input id="setFpsName" value="${esc(p.fpsName||'')}" placeholder="Fair Price Shop"></div>
+      <div><label>Dealer Name</label><input id="setDealerName" value="${esc(p.dealerName||'')}" placeholder="Dealer name"></div>
+      <div><label>FPS Code</label><input id="setFpsCode" value="${esc(p.fpsCode||'')}" placeholder="FPS code"></div>
+      <div><label>Place / Village</label><input id="setPlace" value="${esc(p.place||'')}" placeholder="Place"></div>
+    </div></div>
+    <div class="setting-section"><div class="setting-title">Connection</div><div class="notice">Google Sheets integration is built into this app and is not exposed here. Use Sync from Home when you need a manual sync.</div></div>
+    <div class="setting-section"><div class="settings-actions"><button class="secondary" id="resetTheme">Reset appearance</button><button class="primary" id="saveProfile">SAVE SETTINGS</button></div></div>
+  </div>`;
+  document.body.appendChild(wrap);
+  $('#closeSettings').onclick=closeSettings;
+  wrap.addEventListener('click',e=>{if(e.target===wrap)closeSettings();});
+  wrap.querySelectorAll('[data-theme-choice]').forEach(b=>b.onclick=()=>{applyTheme(b.dataset.themeChoice);wrap.querySelectorAll('[data-theme-choice]').forEach(x=>x.classList.toggle('active',x===b));});
+  $('#resetTheme').onclick=()=>{applyTheme('light');wrap.querySelectorAll('[data-theme-choice]').forEach(x=>x.classList.toggle('active',x.dataset.themeChoice==='light'));};
+  $('#saveProfile').onclick=saveProfile;
+}
+function closeSettings(){document.getElementById('settingsSheet')?.remove();}
+
 function render(){
   $('#nav').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.page===state.page));
   if(state.page==='home')renderHome();
@@ -444,10 +521,12 @@ function render(){
   else if(state.page==='reports')renderReports();
 }
 $('#nav').querySelectorAll('button').forEach(b=>b.onclick=()=>{state.page=b.dataset.page;render();});
-$('#settingsBtn').onclick=async()=>{const choice=confirm((GAS_URL()?'Connected to Google Sheets.\n\nOK = Test & sync\nCancel = Change URL':'Google Sheets is not connected.\n\nOK = Connect now')) ; if(choice){ if(GAS_URL()) { try{await fullSync();toast('Sync complete');render();}catch(e){toast(e.message);} } else await configureConnection(); } else if(GAS_URL()) await configureConnection();};
+applyTheme(localStorage.getItem('rice-register-theme')||'light',false);
+$('#settingsBtn').onclick=openSettings;
 render();
 window.addEventListener('online',()=>{if(GAS_URL()) fullSync().then(()=>toast('Back online · synced')).catch(()=>{});});
 if(GAS_URL() && navigator.onLine) setTimeout(()=>fullSync().then(()=>render()).catch(()=>{}),700);
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 })();
 </script>
 </body>
